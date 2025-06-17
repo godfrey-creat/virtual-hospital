@@ -5,7 +5,7 @@ from app import app  # your Flask app
 with app.app_context():
     if not User.query.filter_by(role='admin').first():
         hashed_password = generate_password_hash("AdminPassword123")
-        admin = User(email='admin@example.com', password=hashed_password, role='admin')
+        admin = User(email='admin@example.com', password=hashed_password, role='admin', approved=True)
         db.session.add(admin)
         db.session.commit()
         print("✅ Admin user created.")

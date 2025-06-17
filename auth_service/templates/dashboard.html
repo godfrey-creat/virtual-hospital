@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome, {{ user.email }}</h2>
+<p>Your role: {{ user.role }}</p>
+{% if not user.approved %}
+    <p style="color:red;">Your account is pending admin approval.</p>
+{% else %}
+    <p>Your account is approved.</p>
+    <!-- Add more dashboard options here -->
+{% endif %}
+{% endblock %}

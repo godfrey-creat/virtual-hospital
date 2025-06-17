@@ -2,7 +2,6 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 
-# Just create the SQLAlchemy instance here — no need to pass `app`
 db = SQLAlchemy()
 
 
@@ -16,7 +15,7 @@ class User(db.Model):
     location = db.Column(db.String(100), nullable=True)
     dob = db.Column(db.String(20), nullable=True)
     role = db.Column(db.String(20), nullable=False)  # user, doctor, admin
-    approved = db.Column(db.Boolean, default=True)  # False for doctors until admin approval
+    approved = db.Column(db.Boolean, default=False)  # Default: all users unapproved
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     doctor_profile = db.relationship(
@@ -42,8 +41,7 @@ class DoctorProfile(db.Model):
     license_no = db.Column(db.String(100), nullable=False)
     license_pdf_path = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    approved = db.Column(db.Boolean, default=False)  # for all users (e.g., doctors)
-
+    approved = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', back_populates='doctor_profile')
 

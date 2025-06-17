@@ -1,5 +1,5 @@
 from flask import Flask
-from auth_service.models import db  # just import db here
+from auth_service.models import db
 from auth_service.admin_routes import admin_routes
 
 app = Flask(__name__)
@@ -10,7 +10,12 @@ app.config['SECRET_KEY'] = 'your-secret-key'
 # Link db to app
 db.init_app(app)
 
+# Register blueprints
+#app.register_blueprint(admin_routes)
+
+# Create tables
 with app.app_context():
     db.create_all()
 
-#app.register_blueprint(admin_routes)
+if __name__ == '__main__':
+    app.run(port=3000, debug=True)

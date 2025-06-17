@@ -8,9 +8,6 @@ import datetime
 admin_routes = Blueprint('admin_routes', __name__)
 
 
-# -------------------------------
-# One-time Admin Registration
-# -------------------------------
 @admin_routes.route('/admin/register', methods=['POST'])
 def admin_register():
     if User.query.filter_by(role='admin').first():
@@ -24,16 +21,12 @@ def admin_register():
         return jsonify({"error": "Email and password required"}), 400
 
     hashed_password = generate_password_hash(password)
-    new_admin = User(email=email, password_hash=hashed_password, role="admin")
+    new_admin = User(email=email, password_hash=hashed_password, role="admin", approved=True)
     db.session.add(new_admin)
     db.session.commit()
 
     return jsonify({"message": "Admin account created"}), 201
 
-
-# -------------------------------
-# Admin Login
-# -------------------------------
 @admin_routes.route('/admin/login', methods=['POST'])
 def admin_login():
     data = request.get_json()
@@ -47,10 +40,6 @@ def admin_login():
     token = create_access_token(identity=email, expires_delta=datetime.timedelta(hours=3))
     return jsonify({"access_token": token}), 200
 
-
-# -------------------------------
-# View All Users
-# -------------------------------
 @admin_routes.route('/admin/users', methods=['GET'])
 @jwt_required()
 @admin_required
@@ -62,13 +51,19 @@ def list_all_users():
         "role": user.role,
         "location": user.location,
         "phone": user.phone,
-        "dob": user.dob
+        "dob": user.dob,
+        "approved": user.approved
     } for user in users]), 200
 
+@admin_routes.route('/admin/user/<int:user_id>/approve', methods=['POST'])
+@jwt_required()
+@admin_required
+def approve_user(user_id):
+    user = User.query.get_or_404(user_id)
+    user.approved = True
+    db.session.commit()
+    return jsonify({"message": "User approved"}), 200
 
-# -------------------------------
-# View All Doctors
-# -------------------------------
 @admin_routes.route('/admin/doctors', methods=['GET'])
 @jwt_required()
 @admin_required
@@ -83,10 +78,6 @@ def list_all_doctors():
         "license_pdf_path": doc.license_pdf_path
     } for doc in doctors]), 200
 
-
-# -------------------------------
-# Approve Doctor
-# -------------------------------
 @admin_routes.route('/admin/doctor/<int:doctor_id>/approve', methods=['POST'])
 @jwt_required()
 @admin_required
@@ -96,10 +87,6 @@ def approve_doctor(doctor_id):
     db.session.commit()
     return jsonify({"message": "Doctor approved"}), 200
 
-
-# -------------------------------
-# Reject Doctor
-# -------------------------------
 @admin_routes.route('/admin/doctor/<int:doctor_id>/reject', methods=['POST'])
 @jwt_required()
 @admin_required
@@ -108,71 +95,3 @@ def reject_doctor(doctor_id):
     db.session.delete(doctor)
     db.session.commit()
     return jsonify({"message": "Doctor registration rejected and deleted"}), 200
-
-
-# -------------------------------
-# View All Appointments
-# -------------------------------
-@admin_routes.route('/admin/appointments', methods=['GET'])
-@jwt_required()
-@admin_required
-def view_appointments():
-    appointments = Appointment.query.all()
-    return jsonify([{
-        "id": appt.id,
-        "patient_email": appt.patient.email,
-        "doctor_email": appt.doctor.user.email,
-        "date": appt.date.strftime('%Y-%m-%d %H:%M:%S'),
-        "status": appt.status
-    } for appt in appointments]), 200
-
-
-# -------------------------------
-# Monitor Departments
-# -------------------------------
-@admin_routes.route('/admin/departments', methods=['GET'])
-@jwt_required()
-@admin_required
-def monitor_departments():
-    departments = Department.query.all()
-    return jsonify([{
-        "id": d.id,
-        "name": d.name,
-        "status": d.status
-    } for d in departments]), 200
-
-
-# -------------------------------
-# List Unapproved Doctors
-# -------------------------------
-@admin_routes.route('/admin/unapproved-doctors', methods=['GET'])
-@jwt_required()
-@admin_required
-def get_unapproved_doctors():
-    unapproved = DoctorProfile.query.join(User).filter(User.approved == False).all()
-    return jsonify([{
-        "id": doc.id,
-        "email": doc.user.email,
-        "specialty": doc.specialty,
-        "license_no": doc.license_no,
-        "license_pdf_path": doc.license_pdf_path
-    } for doc in unapproved]), 200
-
-
-# -------------------------------
-# Approve Doctor (By Email)
-# -------------------------------
-@admin_routes.route('/admin/approve-doctor', methods=['POST'])
-@jwt_required()
-@admin_required
-def approve_doctor_by_email():
-    data = request.get_json()
-    email = data.get('email')
-
-    user = User.query.filter_by(email=email, role='doctor').first()
-    if not user:
-        return jsonify({"error": "Doctor not found"}), 404
-
-    user.approved = True
-    db.session.commit()
-    return jsonify({"message": f"Doctor {email} approved"}), 200

@@ -26,13 +26,14 @@ def register():
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "User already exists"}), 400
 
+    # All registrations require admin approval by default
     user = User(
         email=email,
         phone=phone,
         location=location,
         dob=dob,
         role=role,
-        approved=True if role != 'doctor' else False  # Doctors need approval
+        approved=False  # All users require admin approval now
     )
     user.set_password(password)
 
@@ -58,9 +59,7 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    message = "Registration submitted. Doctor account pending admin approval" if role == "doctor" else "User registered successfully"
-    return jsonify({"message": message}), 201
-
+    return jsonify({"message": "Registration submitted. Account pending admin approval"}), 201
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -72,20 +71,19 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    if user.role == "doctor" and not user.approved:
-        return jsonify({"error": "Doctor account not approved by admin yet"}), 403
+    if not user.approved:
+        return jsonify({"error": "Account not approved by admin yet"}), 403
 
     access_token = create_access_token(identity=user.email, additional_claims={"role": user.role})
     return jsonify({"access_token": access_token}), 200
 
 auth_routes = Blueprint('auth_routes', __name__)
 
-# Make sure this is defined somewhere globally (in-memory or better a DB/Redis)
 jwt_blacklist = set()
 
 @auth_routes.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
-    jti = get_jwt()['jti']  # JWT ID, unique identifier for the token
-    jwt_blacklist.add(jti)  # Add this token's jti to blacklist
+    jti = get_jwt()['jti']
+    jwt_blacklist.add(jti)
     return jsonify({"message": "Successfully logged out"}), 200

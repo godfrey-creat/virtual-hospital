@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Register</h2>
+<form method="POST" enctype="multipart/form-data">
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Password: <input type="password" name="password" required></label><br>
+    <label>Phone: <input type="text" name="phone"></label><br>
+    <label>Location: <input type="text" name="location"></label><br>
+    <label>Date of Birth: <input type="date" name="dob"></label><br>
+    <label>Role:
+        <select name="role" id="role" required onchange="toggleDoctorFields()">
+            <option value="user">User</option>
+            <option value="doctor">Doctor</option>
+        </select>
+    </label><br>
+    <div id="doctor-fields" style="display:none;">
+        <label>Specialty: <input type="text" name="specialty"></label><br>
+        <label>License Number: <input type="text" name="license_no"></label><br>
+        <label>License PDF: <input type="file" name="license" accept=".pdf"></label><br>
+    </div>
+    <button type="submit">Register</button>
+</form>
+<script>
+function toggleDoctorFields() {
+    var role = document.getElementById("role").value;
+    document.getElementById("doctor-fields").style.display = (role === "doctor") ? "block" : "none";
+}
+document.addEventListener("DOMContentLoaded", toggleDoctorFields);
+</script>
+{% endblock %}
