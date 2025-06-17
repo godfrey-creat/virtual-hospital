@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Pending Doctor Approvals</h2>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Specialty</th>
+        <th>License No</th>
+        <th>License PDF</th>
+        <th>Action</th>
+    </tr>
+    {% for doctor in doctors %}
+    <tr>
+        <td>{{ doctor.user.email }}</td>
+        <td>{{ doctor.specialty }}</td>
+        <td>{{ doctor.license_no }}</td>
+        <td>
+            {% if doctor.license_pdf_path %}
+                <a href="{{ url_for('static', filename=doctor.license_pdf_path|replace('uploaded_licenses/', '') ) }}" target="_blank">View PDF</a>
+            {% else %}
+                N/A
+            {% endif %}
+        </td>
+        <td>
+            <form action="{{ url_for('admin_routes.approve_doctor', doctor_id=doctor.id) }}" method="post" style="display:inline;">
+                <button type="submit">Approve</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% if not doctors %}
+<p>No pending doctors for approval.</p>
+{% endif %}
+{% endblock %}

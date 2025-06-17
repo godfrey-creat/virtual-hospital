@@ -8,11 +8,14 @@
     <td>{{ user.email }}</td>
     <td>{{ user.role }}</td>
     <td>
-        <form action="{{ url_for('admin_approve_user', user_id=user.id) }}" method="post" style="display:inline;">
+        <form action="{{ url_for('admin_routes.approve_user', user_id=user.id) }}" method="post" style="display:inline;">
             <button type="submit">Approve</button>
         </form>
     </td>
 </tr>
 {% endfor %}
 </table>
+{% if not pending_users %}
+<p>No users pending approval.</p>
+{% endif %}
 {% endblock %}
