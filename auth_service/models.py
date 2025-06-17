@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -14,9 +13,15 @@ class User(db.Model):
     phone = db.Column(db.String(20), nullable=True)
     location = db.Column(db.String(100), nullable=True)
     dob = db.Column(db.String(20), nullable=True)
-    role = db.Column(db.String(20), nullable=False)  # user, doctor, admin
-    approved = db.Column(db.Boolean, default=False)  # Default: all users unapproved
+    role = db.Column(db.String(20), nullable=False)  # e.g., 'user', 'doctor', 'admin'
+    approved = db.Column(db.Boolean, default=False)  # Default for all users
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    type = db.Column(db.String(50))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': type
+    }
 
     doctor_profile = db.relationship(
         'DoctorProfile',
@@ -30,6 +35,16 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+
+class Admin(User):
+    __mapper_args__ = {'polymorphic_identity': 'admin'}
+
+    def __init__(self, email, password):
+        self.email = email
+        self.role = 'admin'
+        self.approved = True
+        self.set_password(password)
 
 
 class DoctorProfile(db.Model):

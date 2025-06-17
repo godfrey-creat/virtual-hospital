@@ -10,11 +10,11 @@
         <h1>Virtual Hospital</h1>
         <nav>
             {% if not session.get('user_id') %}
-                <a href="{{ url_for('register') }}">Register</a>
-                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('auth_routes.register') }}">Register</a>
+                <a href="{{ url_for('auth_routes.login') }}">Login</a>
             {% else %}
-                <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('auth_routes.dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('auth_routes.logout') }}">Logout</a>
             {% endif %}
         </nav>
     </header>

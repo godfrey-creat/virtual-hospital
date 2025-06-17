@@ -1,13 +1,12 @@
-from models import db, User
-from werkzeug.security import generate_password_hash
-from app import app  # your Flask app
+from models import db, Admin
+from app import app  # Your Flask app
 
 with app.app_context():
-    if not User.query.filter_by(role='admin').first():
-        hashed_password = generate_password_hash("AdminPassword123")
-        admin = User(email='admin@example.com', password=hashed_password, role='admin', approved=True)
+    existing_admin = Admin.query.first()
+    if existing_admin:
+        print("⚠️ Admin already exists with email:", existing_admin.email)
+    else:
+        admin = Admin(email='admin-virtual@gmail.com', password='admin-virtual@2025')
         db.session.add(admin)
         db.session.commit()
         print("✅ Admin user created.")
-    else:
-        print("⚠️ Admin already exists.")
