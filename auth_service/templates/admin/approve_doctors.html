@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- [CSS Styles kept the same, no changes needed for now] -->
+
+<!-- Doctor Approval Section -->
+<div class="admin-header">
+    <div class="admin-icon">
+        <i class="fas fa-user-check"></i>
+    </div>
+    <div>
+        <h2 class="admin-title">Doctor Approvals</h2>
+        <p class="admin-subtitle">Review and manage pending doctor registrations</p>
+    </div>
+</div>
+
+{% if doctors %}
+<!-- Statistics Banner -->
+<div class="stats-banner">
+    <div class="stats-icon">
+        <i class="fas fa-clock"></i>
+    </div>
+    <div class="stats-content">
+        <h3>{{ doctors|length }} Pending</h3>
+        <p>{{ 'Application' if doctors|length == 1 else 'Applications' }} awaiting your review</p>
+    </div>
+</div>
+
+<!-- Pending Doctors Table -->
+<div class="table-container">
+    <div class="table-header">
+        <h3><i class="fas fa-list-check"></i> Pending Applications</h3>
+    </div>
+    
+    <table class="doctors-table">
+        <thead>
+            <tr>
+                <th><i class="fas fa-envelope"></i> Doctor Email</th>
+                <th><i class="fas fa-stethoscope"></i> Specialty</th>
+                <th><i class="fas fa-id-card"></i> License Number</th>
+                <th><i class="fas fa-file-pdf"></i> License Document</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doctor in doctors %}
+            <tr>
+                <td><div class="doctor-email">{{ doctor.user.email }}</div></td>
+                <td><span class="specialty-badge">{{ doctor.specialty }}</span></td>
+                <td><span class="license-no">{{ doctor.license_no }}</span></td>
+                <td>
+                    {% if doctor.license_pdf_path %}
+                        <a href="{{ url_for('static', filename=doctor.license_pdf_path|replace('static/', '') ) }}" 
+                           target="_blank" class="pdf-link">
+                            <i class="fas fa-file-pdf"></i> View License
+                        </a>
+                    {% else %}
+                        <span style="color: #9ca3af; font-style: italic;">No document uploaded</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <!-- Approve Doctor Form -->
+                        <form action="{{ url_for('admin_routes.approve_doctors', doctor_id=doctor.id) }}" 
+                              method="post" style="display:inline;">
+                            {% if csrf_token %}{{ csrf_token() }}{% endif %}
+                            <button type="submit" class="approve-btn" 
+                                    onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Approving...'; this.disabled=true;">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                        </form>
+
+                        <!-- Reject Doctor Form -->
+                        <form action="{{ url_for('admin_routes.reject_doctors', doctor_id=doctor.id) }}" 
+                              method="post" style="display:inline;">
+                            {% if csrf_token %}{{ csrf_token() }}{% endif %}
+                            <button type="submit" class="reject-btn" 
+                                    onclick="return confirm('Are you sure you want to reject this application?')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<!-- Empty State -->
+<div class="empty-state">
+    <div class="empty-icon">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    <h3 class="empty-title">All Caught Up!</h3>
+    <p class="empty-description">
+        There are no pending doctor applications at the moment. 
+        New registrations will appear here for your review.
+    </p>
+</div>
+{% endif %}
+
+<!-- JavaScript Enhancements -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tableRows = document.querySelectorAll('.doctors-table tbody tr');
+    tableRows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            row.style.transition = 'all 0.5s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    const approveButtons = document.querySelectorAll('.approve-btn');
+    approveButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            this.disabled = true;
+            setTimeout(() => {
+                this.closest('form').submit();
+            }, 500);
+        });
+    });
+});
+</script>
+{% endblock %}

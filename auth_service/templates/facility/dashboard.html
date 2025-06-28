@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Facility Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .info-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 600px;
+            background-color: #f9f9f9;
+        }
+
+        .info-box p {
+            margin: 8px 0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .logout {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ facility.name }}</h1>
+
+    <div class="info-box">
+        <p><span class="label">Facility Type:</span> {{ facility.facility_type.capitalize() }}</p>
+        <p><span class="label">Location:</span> {{ facility.location }}</p>
+        <p><span class="label">Email:</span> {{ facility.email }}</p>
+        <p><span class="label">Bio:</span> {{ facility.bio }}</p>
+        <p><span class="label">License File:</span> {{ facility.license_pdf_path.split('/')[-1] }}</p>
+
+        {% if facility.extra_info %}
+            {% if facility.extra_info.get('level') %}
+                <p><span class="label">Level:</span> {{ facility.extra_info.level }}</p>
+            {% endif %}
+            {% if facility.extra_info.get('operation_hours') %}
+                <p><span class="label">Operation Hours:</span> {{ facility.extra_info.operation_hours }}</p>
+            {% endif %}
+            {% if facility.extra_info.get('services') %}
+                <p><span class="label">Services:</span> {{ facility.extra_info.services }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="logout">
+        <a href="{{ url_for('facilities_routes.logout_facility') }}">Logout</a>
+    </div>
+</body>
+</html>
+{% endblock %}

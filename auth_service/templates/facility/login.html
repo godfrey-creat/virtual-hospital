@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}<!DOCTYPE html>
+<html>
+<head>
+    <title>Facility Login</title>
+    <style>
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 300px;
+            padding: 5px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Facility Login</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li style="color: {{ 'red' if category == 'danger' else 'green' if category == 'success' else 'orange' }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="section">
+            <label>Email:</label>
+            <input type="email" name="email" required>
+        </div>
+
+        <div class="section">
+            <label>Password:</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <div class="section">
+            <button type="submit">Login</button>
+        </div>
+    </form>
+
+    <p>Don't have an account? <a href="{{ url_for('facilities_routes.register_facility') }}">Register here</a></p>
+</body>
+</html>
+{% endblock %}

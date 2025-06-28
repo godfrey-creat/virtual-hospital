@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Profile</title>
+    <style>
+        .profile {
+            border: 1px solid #aaa;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Doctor Details</h2>
+    <div class="profile">
+        <p><strong>Name (Email):</strong> {{ doctor.email }}</p>
+        <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+        <p><strong>Location:</strong> {{ doctor.location }}</p>
+        <p><strong>Date of Birth:</strong> {{ doctor.dob }}</p>
+        <p><strong>Specialty:</strong> {{ doctor.doctor_profile.specialty }}</p>
+        <p><strong>License No:</strong> {{ doctor.doctor_profile.license_no }}</p>
+        <p><strong>Short Bio:</strong> {{ doctor.bio if doctor.bio else 'N/A' }}</p>
+    </div>
+    <p><a href="{{ url_for('auth_routes.view_doctors') }}">← Back to all doctors</a></p>
+</body>
+</html>
+{% endblock %}

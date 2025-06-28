@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recommendation Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #007BFF;
+        }
+
+        .recommendation {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .entity-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            width: 260px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h4 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+
+        .card p {
+            margin: 5px 0;
+            color: #444;
+        }
+
+        .back {
+            margin-top: 30px;
+            display: inline-block;
+            text-decoration: none;
+            background: #007BFF;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+        }
+
+        .back:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Your Recommendation</h2>
+        <p class="recommendation">
+            Based on your symptoms, age, and location, we recommend visiting a <strong>{{ recommendation|capitalize }}</strong>.
+        </p>
+
+        <h3>Nearby {{ recommendation|capitalize }} Options:</h3>
+        <div class="entity-list">
+            {% for entity in entities %}
+                <div class="card">
+                    <h4>{{ entity.name if entity.name else entity.email }}</h4>
+                    <p><strong>Location:</strong> {{ entity.location }}</p>
+                    <p><strong>Email:</strong> {{ entity.email }}</p>
+                    {% if entity.bio %}
+                        <p><strong>Bio:</strong> {{ entity.bio }}</p>
+                    {% endif %}
+                    {% if entity.specialty %}
+                        <p><strong>Specialty:</strong> {{ entity.specialty }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <a class="back" href="{{ url_for('auth_routes.copilot') }}">← Start Over</a>
+    </div>
+
+</body>
+</html>
+{% endblock %}

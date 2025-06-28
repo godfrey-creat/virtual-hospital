@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Approved Facilities</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .facility-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .facility-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .facility-card h3 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+
+        .facility-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .back {
+            margin-top: 20px;
+            display: inline-block;
+            background: #007BFF;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Approved Medical Facilities</h2>
+
+    {% if facilities %}
+        <div class="facility-list">
+            {% for facility in facilities %}
+                <div class="facility-card">
+                    <h3>{{ facility.name }}</h3>
+                    <p><span class="label">Type:</span> {{ facility.facility_type.capitalize() }}</p>
+                    <p><span class="label">Location:</span> {{ facility.location }}</p>
+                    <p><span class="label">Email:</span> {{ facility.email }}</p>
+                    <p><span class="label">Bio:</span> {{ facility.bio }}</p>
+
+                    {% if facility.extra_info %}
+                        {% for key, value in facility.extra_info.items() %}
+                            <p><span class="label">{{ key.replace('_', ' ').capitalize() }}:</span> {{ value }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No facilities available at the moment.</p>
+    {% endif %}
+
+    <a class="back" href="{{ url_for('auth_routes.dashboard') }}">← Back to Dashboard</a>
+
+</body>
+</html>

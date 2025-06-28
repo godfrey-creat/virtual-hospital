@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Approve Facilities</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .actions form {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .flash {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Pending Facility Approvals</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li class="flash" style="color: {{ 'red' if category == 'danger' else 'green' if category == 'success' else 'orange' }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% if pending_facilities %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Email</th>
+                    <th>Location</th>
+                    <th>Bio</th>
+                    <th>Services</th>
+                    <th>License File</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facility in pending_facilities %}
+                <tr>
+                    <td>{{ facility.name }}</td>
+                    <td>{{ facility.facility_type.capitalize() }}</td>
+                    <td>{{ facility.email }}</td>
+                    <td>{{ facility.location }}</td>
+                    <td>{{ facility.bio }}</td>
+                    <td>{{ facility.extra_info.get('services') if facility.extra_info else '—' }}</td>
+                    <td>
+                        {% if facility.license_pdf_path %}
+                            <a href="{{ url_for('static', filename=facility.license_pdf_path.split('static/')[-1]) }}" target="_blank">View PDF</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <form method="POST" action="{{ url_for('admin_routes.admin_approve_facility', facility_id=facility.id) }}">
+                            <button type="submit">Approve</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('admin_routes.admin_reject_facility', facility_id=facility.id) }}">
+                            <button type="submit" style="color: red;">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No pending facilities for approval.</p>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        .welcome {
+            margin-bottom: 30px;
+        }
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 300px;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.03);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+        .card p {
+            color: #555;
+        }
+        .card a {
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            padding: 8px 16px;
+            border-radius: 5px;
+        }
+        .card a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome">
+        <h2>Welcome, {{ user.email }}</h2>
+        <p>This is your dashboard. Use the links below to explore.</p>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <h3>View Doctors</h3>
+            <p>Browse a list of registered and approved doctors. Click to view their profiles and specialties.</p>
+            <a href="{{ url_for('auth_routes.view_doctors') }}">Explore Doctors</a>
+        </div>
+
+        <div class="card">
+            <h3>View Facilities</h3>
+            <p>See registered hospitals, pharmacies, laboratories, and imaging centers near you.</p>
+            <a href="{{ url_for('auth_routes.view_facilities') }}">Explore Facilities</a>
+        </div>
+
+        <div class="card">
+            <h3>Interact with CoPilot</h3>
+            <p>Ask the AI questions about your health, symptoms, or general guidance.</p>
+            <a href="{{ url_for('auth_routes.copilot') }}">Chat with CoPilot</a>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

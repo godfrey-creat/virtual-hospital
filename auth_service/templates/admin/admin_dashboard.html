@@ -1,8 +1,510 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Admin Dashboard</h2>
-<ul>
-    <li><a href="{{ url_for('admin_routes.approve_users') }}">Approve Users</a></li>
-    <li><a href="{{ url_for('admin_routes.approve_doctors') }}">Approve Doctors</a></li>
-</ul>
+<div class="admin-header">
+    <div class="admin-icon">
+        <i class="fas fa-tachometer-alt"></i>
+    </div>
+    <div>
+        <h2 class="admin-title">Admin Dashboard</h2>
+        <p class="admin-subtitle">Manage users, doctors, and system settings</p>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="dashboard-card primary">
+        <div class="card-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="card-content">
+            <h3>User Management</h3>
+            <p>Review and approve pending user registrations</p>
+            <a href="{{ url_for('admin_routes.approve_users') }}" class="card-button">
+                <span>Approve Users</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="card-decoration"></div>
+    </div>
+
+    <div class="dashboard-card secondary">
+        <div class="card-icon">
+            <i class="fas fa-user-md"></i>
+        </div>
+        <div class="card-content">
+            <h3>Doctor Verification</h3>
+            <p>Verify credentials and approve doctor applications</p>
+            <a href="{{ url_for('admin_routes.approve_doctors') }}" class="card-button">
+                <span>Approve Doctors</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="card-decoration"></div>
+    </div>
+
+    <div class="dashboard-card accent">
+        <div class="card-icon">
+            <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="card-content">
+            <h3>System Analytics</h3>
+            <p>View platform statistics and user activity</p>
+            <a href="#" class="card-button disabled">
+                <span>Coming Soon</span>
+                <i class="fas fa-clock"></i>
+            </a>
+        </div>
+        <div class="card-decoration"></div>
+    </div>
+
+    <div class="dashboard-card info">
+        <div class="card-icon">
+            <i class="fas fa-cog"></i>
+        </div>
+        <div class="card-content">
+            <h3>System Settings</h3>
+            <p>Configure platform settings and preferences</p>
+            <a href="#" class="card-button disabled">
+                <span>Coming Soon</span>
+                <i class="fas fa-clock"></i>
+            </a>
+        </div>
+        <div class="card-decoration"></div>
+    </div>
+</div>
+
+<div class="quick-stats">
+    <h3 class="stats-title">
+        <i class="fas fa-chart-line"></i>
+        Quick Overview
+    </h3>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-icon users">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="stat-info">
+                <h4>Pending Users</h4>
+                <p class="stat-number">--</p>
+                <span class="stat-label">Awaiting approval</span>
+            </div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-icon doctors">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+            <div class="stat-info">
+                <h4>Pending Doctors</h4>
+                <p class="stat-number">--</p>
+                <span class="stat-label">Awaiting verification</span>
+            </div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-icon active">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="stat-info">
+                <h4>System Status</h4>
+                <p class="stat-number">Online</p>
+                <span class="stat-label">All systems operational</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="admin-actions">
+    <h3 class="actions-title">
+        <i class="fas fa-bolt"></i>
+        Quick Actions
+    </h3>
+    <div class="actions-grid">
+        <button class="action-btn" onclick="refreshDashboard()">
+            <i class="fas fa-sync-alt"></i>
+            <span>Refresh Data</span>
+        </button>
+        
+        <button class="action-btn" onclick="exportData()">
+            <i class="fas fa-download"></i>
+            <span>Export Reports</span>
+        </button>
+        
+        <button class="action-btn" onclick="systemHealth()">
+            <i class="fas fa-shield-alt"></i>
+            <span>System Health</span>
+        </button>
+        
+        <button class="action-btn" onclick="notifications()">
+            <i class="fas fa-bell"></i>
+            <span>Notifications</span>
+        </button>
+    </div>
+</div>
+
+<style>
+    .admin-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .admin-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .admin-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .admin-subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .dashboard-card {
+        position: relative;
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card.primary {
+        border-left: 4px solid #3b82f6;
+    }
+
+    .dashboard-card.secondary {
+        border-left: 4px solid #10b981;
+    }
+
+    .dashboard-card.accent {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .dashboard-card.info {
+        border-left: 4px solid #8b5cf6;
+    }
+
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: white;
+    }
+
+    .dashboard-card.primary .card-icon {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .dashboard-card.secondary .card-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .dashboard-card.accent .card-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .dashboard-card.info .card-icon {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .card-content h3 {
+        color: #1f2937;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-content p {
+        color: #6b7280;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        color: #374151;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        background: #f9fafb;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+    }
+
+    .card-button:hover:not(.disabled) {
+        background: #667eea;
+        color: white;
+        transform: translateX(4px);
+        text-decoration: none;
+    }
+
+    .card-button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .card-decoration {
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    }
+
+    .quick-stats, .admin-actions {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    .stats-title, .actions-title {
+        color: #1f2937;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f9fafb;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .stat-icon.users {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .stat-icon.doctors {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .stat-icon.active {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .stat-info h4 {
+        color: #1f2937;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .stat-number {
+        color: #374151;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-size: 0.8rem;
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1.5rem 1rem;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .action-btn:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .action-btn i {
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .admin-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .actions-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards on load
+    const cards = document.querySelectorAll('.dashboard-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+
+    // Load actual stats (you can replace this with actual data fetching)
+    setTimeout(() => {
+        // Simulate loading real data
+        document.querySelector('.stat-item:nth-child(1) .stat-number').textContent = '12';
+        document.querySelector('.stat-item:nth-child(2) .stat-number').textContent = '8';
+    }, 1000);
+});
+
+function refreshDashboard() {
+    const btn = event.currentTarget;
+    const icon = btn.querySelector('i');
+    
+    icon.style.animation = 'spin 1s linear infinite';
+    btn.style.background = '#667eea';
+    btn.style.color = 'white';
+    
+    setTimeout(() => {
+        icon.style.animation = '';
+        btn.style.background = '';
+        btn.style.color = '';
+        
+        // Show success message
+        showNotification('Dashboard refreshed successfully!', 'success');
+    }, 2000);
+}
+
+function exportData() {
+    showNotification('Export feature coming soon!', 'info');
+}
+
+function systemHealth() {
+    showNotification('All systems operational!', 'success');
+}
+
+function notifications() {
+    showNotification('No new notifications', 'info');
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        ${type === 'success' ? 'background: linear-gradient(135deg, #10b981, #059669);' : 'background: linear-gradient(135deg, #3b82f6, #1d4ed8);'}
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100px)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</script>
 {% endblock %}

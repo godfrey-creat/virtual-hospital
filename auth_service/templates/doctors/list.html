@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Available Doctors</title>
+    <style>
+        .doctor-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Registered Doctors</h2>
+
+    <form method="GET">
+        <label for="specialty">Specialty:</label>
+        <input type="text" name="specialty" id="specialty" value="{{ specialty }}">
+
+        <label for="location">Location:</label>
+        <input type="text" name="location" id="location" value="{{ location }}">
+
+        <button type="submit">Search</button>
+    </form>
+
+    {% if doctors %}
+        {% for doctor in doctors %}
+            <div class="doctor-card">
+                <h3><a href="{{ url_for('auth_routes.doctor_detail', doctor_id=doctor.id) }}">{{ doctor.email }}</a></h3>
+                <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+                <p><strong>Location:</strong> {{ doctor.location }}</p>
+                <p><strong>Specialty:</strong> {{ doctor.doctor_profile.specialty }}</p>
+                <p><strong>Short Bio:</strong> {{ doctor.bio if doctor.bio else '—' }}</p>
+                <a href="mailto:{{ doctor.email }}">Contact</a>
+            </div>
+        {% endfor %}
+
+        <div class="pagination">
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('auth_routes.view_doctors', page=pagination.prev_num, specialty=specialty, location=location) }}">Previous</a>
+            {% endif %}
+
+            Page {{ pagination.page }} of {{ pagination.pages }}
+
+            {% if pagination.has_next %}
+                <a href="{{ url_for('auth_routes.view_doctors', page=pagination.next_num, specialty=specialty, location=location) }}">Next</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>No doctors found matching your search.</p>
+    {% endif %}
+</body>
+</html>
+
+{% endblock %}
