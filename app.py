@@ -3,6 +3,9 @@ from auth_service.models import db
 from auth_service.auth_routes import auth_routes
 from auth_service.admin_routes import admin_routes
 from facilities.facilities_routes import facilities_routes
+from auth_service.ai_model import clinical_routes  # Import clinical routes
+#from auth_service.ai_model import get_gemini_response  # Import the AI model function
+#from auth_service.ai_model import classify_condition  # Import the AI model function for classification
 import os
 
 # Initialize the Flask app
@@ -28,6 +31,8 @@ def landing_page():
 app.register_blueprint(auth_routes)
 app.register_blueprint(admin_routes)
 app.register_blueprint(facilities_routes, url_prefix='/facilities_routes')
+app.register_blueprint(clinical_routes)
+#app.register_blueprint(clinical_bp, url_prefix='/clinical')
 
 # Create tables if they don't exist
 with app.app_context():

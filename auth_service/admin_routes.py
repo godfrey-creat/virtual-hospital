@@ -78,7 +78,7 @@ def admin_approve_doctor(doctor_id):
     flash(f'Doctor {doctor.user.email} approved!', "success")
     return redirect(url_for('admin_routes.approve_doctors'))
 
-@admin_routes.route('/admin/reject_doctors/<int:doctor_id>', methods=['POST'])
+@admin_routes.route('/admin/reject_doctor/<int:doctor_id>', methods=['POST'])
 @admin_required
 def reject_doctor(doctor_id):
     doctor = DoctorProfile.query.get_or_404(doctor_id)
@@ -87,7 +87,7 @@ def reject_doctor(doctor_id):
     db.session.delete(user)
     db.session.commit()
     flash(f'Doctor {user.email} rejected and deleted.', "info")
-    return redirect(url_for('admin_routes.reject_doctors'))
+    return redirect(url_for('admin_routes.reject_doctor'))
 
 @admin_routes.route('/admin/approve_facilities')
 @admin_required

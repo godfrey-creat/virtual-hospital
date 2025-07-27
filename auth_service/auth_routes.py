@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
 from .models import db, User, DoctorProfile, Facility  # Add Facility model
-from .ai_model import classify_condition  # ← Pretrained CO model you integrate
+from .ai_model import clasify_condition  # ← Pretrained CO model you integrate
 #from geopy.distance import geodesic  # Optional for proximity
 import os
 
@@ -163,7 +163,7 @@ def copilot():
 
         # Step 1: Ask model to classify the case
         try:
-            recommendation = classify_condition(symptoms, age, gender)  # returns something like 'pharmacy', 'hospital', etc.
+            recommendation = clasify_condition(symptoms, age, gender)  # returns something like 'pharmacy', 'hospital', etc.
         except Exception as e:
             flash("AI model failed to process your input. Try again.", "danger")
             return render_template('copilot.html')
